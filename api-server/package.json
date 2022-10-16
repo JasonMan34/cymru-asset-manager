@@ -6,7 +6,9 @@
   "scripts": {
     "lint": "eslint src --ext .ts",
     "lintfix": "eslint src --ext .ts --fix",
-    "dev": "ts-node-dev --respawn --inspect=5712 src/server.ts"
+    "dev": "ts-node-dev --respawn --inspect=5712 ./src/server.ts",
+    "build": "tsc -p .",
+    "start": "node ./dist/server.js"
   },
   "author": "",
   "license": "ISC",
