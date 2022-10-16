@@ -7,7 +7,7 @@ enum ScanStatus {
 }
 
 const Scan = new Schema({
-  assetId: { type: Types.ObjectId, required: true },
+  assetId: { type: Types.ObjectId, ref: 'Asset', required: true },
   dateCreated: { type: Date, required: true, default: () => new Date() },
   scanDueDate: { type: Date, required: true },
   dateCompleted: { type: Date },

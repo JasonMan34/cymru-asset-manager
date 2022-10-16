@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { body } from 'express-validator';
+import { Types } from 'mongoose';
 import { validate } from '../middlewares/validate';
 import Asset from '../models/asset';
 
@@ -11,8 +12,21 @@ assetsRouter.get('/', async (req, res) => {
 });
 
 assetsRouter.get('/:id', async (req, res) => {
-  const assets = await Asset.findById(req.params.id);
-  res.json(assets);
+  const asset = await Asset.aggregate([
+    // Find asset by id
+    { $match: { _id: new Types.ObjectId(req.params.id) } },
+    // Lookup scans for the asset
+    {
+      $lookup: {
+        from: 'scans',
+        localField: '_id',
+        foreignField: 'assetId',
+        as: 'scans',
+      },
+    },
+  ]).exec();
+
+  res.json(asset);
 });
 
 assetsRouter.post(
