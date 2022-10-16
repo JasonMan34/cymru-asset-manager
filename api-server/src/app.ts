@@ -5,7 +5,9 @@ import path from 'path';
 import express, { NextFunction, Request, Response } from 'express';
 import helmet from 'helmet';
 import { IS_DEV } from './utils';
-import { errorHandler } from './error-handler/error-handler';
+import { errorHandler } from './middlewares/error-handler';
+import { assetsRouter } from './routes/assets';
+import { scansRouter } from './routes/scans';
 
 const app = express().disable('etag').disable('x-powered-by');
 
@@ -24,12 +26,10 @@ if (IS_DEV) {
 }
 
 // Routes
-app.use(errorHandler());
+app.use('/assets', assetsRouter);
+app.use('/scans', scansRouter);
 
-// health check for Gateway
-app.get('/', (req: Request, res: Response) => {
-  res.send('Server is up and running');
-});
+app.use(errorHandler());
 
 // For SPA (TODO: maybe)
 app.get('*', (req, res) => {
