@@ -15,6 +15,10 @@ scansRouter.post(
       scanDueDate,
     });
 
+    // TODO: Handle invalid assetId.
+    // Should be easy no matter which implementation we choose, even if we change it
+    // so that scans only save inside asset documents.
+    // Probably not what the task is about, so not implemeting for now
     await scan.save();
 
     res.json(scan);
