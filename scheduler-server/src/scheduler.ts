@@ -36,9 +36,9 @@ export const initWorker = () => {
       { _id: job.name },
       { status: ScanStatus.Success, dateCompleted: new Date() }
     );
-    logger.info(
-      `Scan ${job.name} for asset ${job.data.assetId} has scanned successfully in ${job.attemptsMade} attempts`
-    );
+
+    const msg = `Scan ${job.name} for asset ${job.data.assetId} has scanned successfully in ${job.attemptsMade} attempts`;
+    logger.info(msg);
   });
 
   worker.on('failed', async (job, err) => {
@@ -69,6 +69,8 @@ const addScanToQueue = (id: string, doc: ScanInterface) => {
       jobId: id,
       delay,
       attempts: MAX_SCAN_ATTEMPTS,
+      // Retry after 2, 4, and 8 seconds
+      // more retries would occur after 16, 32, etc. seconds, if you increase MAX_SCAN_ATTEMPTS above 3
       backoff: {
         type: 'exponential',
         delay: 2000,
@@ -79,6 +81,7 @@ const addScanToQueue = (id: string, doc: ScanInterface) => {
 
 const removeScanFromQueue = async (id: string) => {
   logger.info(`Attempting to remove scan ${id} from queue`);
+
   const job = await queue.getJob(id);
   if (job && !job.processedOn) {
     await job.remove();
