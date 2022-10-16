@@ -31,7 +31,7 @@ export const teardown = async () => {
   isTearing = true;
 
   logger.info('Closing DB connection...');
-  // await getConnection().close();
+  await mongoose.disconnect();
   logger.info('DB connection closed');
 
   isTearing = false;
