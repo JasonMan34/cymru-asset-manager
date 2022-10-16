@@ -6,6 +6,8 @@ import { ErrorRequestHandler } from 'express';
  */
 export const errorHandler = (): ErrorRequestHandler => async (err, req, res, next) => {
   if (err) {
-    // Handle thrown error
+    console.error(`Error! ${err}`);
+
+    res.status(500).send();
   }
 };
