@@ -80,13 +80,13 @@ const addScanToQueue = (id: string, doc: ScanInterface) => {
 const removeScanFromQueue = async (id: string) => {
   logger.info(`Attempting to remove scan ${id} from queue`);
   const job = await queue.getJob(id);
-  if (job) {
+  if (job && !job.processedOn) {
     await job.remove();
     logger.info(`Successfully removed scan ${id} from queue`);
     return true;
   }
 
-  logger.info(`No job for scan ${id} exists in the  queue`);
+  logger.info(`No unprocessed job for scan ${id} exists in the queue`);
   return false;
 };
 
