@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "lint": "eslint src --ext .ts",
+    "lintfix": "eslint src --ext .ts --fix",
+    "dev": "ts-node-dev --respawn --inspect=5713 src/server.ts"
   },
   "author": "",
   "license": "ISC",
