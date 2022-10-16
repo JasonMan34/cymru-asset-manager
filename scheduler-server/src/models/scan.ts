@@ -1,6 +1,6 @@
 import { model, Schema, Types } from 'mongoose';
 
-enum ScanStatus {
+export enum ScanStatus {
   Pending = 'Pending',
   Success = 'Success',
   Failed = 'Failed',
