@@ -31,9 +31,9 @@ app.use('/scans', scansRouter);
 
 app.use(errorHandler());
 
-// For SPA (TODO: maybe)
-app.get('*', (req, res) => {
-  res.sendFile(path.resolve(__dirname, 'public', 'index.html'));
-});
+// TODO: Maybe, for SPA?
+// app.get('*', (req, res) => {
+//   res.sendFile(path.resolve(__dirname, 'public', 'index.html'));
+// });
 
 export { app };

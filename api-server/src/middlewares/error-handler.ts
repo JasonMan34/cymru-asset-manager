@@ -1,4 +1,5 @@
 import { ErrorRequestHandler } from 'express';
+import { logger } from '../logger';
 
 /**
  * Error handler for express.\
@@ -6,7 +7,7 @@ import { ErrorRequestHandler } from 'express';
  */
 export const errorHandler = (): ErrorRequestHandler => async (err, req, res, next) => {
   if (err) {
-    console.error(`Error! ${err}`);
+    logger.error(`Error! ${err}`);
 
     res.status(500).send();
   }
