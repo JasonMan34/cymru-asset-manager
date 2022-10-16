@@ -1,5 +1,5 @@
 import { Queue, Worker } from 'bullmq';
-import Scan, { ScanStatus } from './models/scan';
+import Scan, { ScanInterface, ScanStatus } from './models/scan';
 import { logger } from './logger';
 
 // Number of attempts to scan before marking scan as failed
@@ -32,24 +32,34 @@ export const initWorker = () => {
   const worker = new Worker('scans', processor, { connection });
 
   worker.on('completed', async job => {
-    await Scan.updateOne({ _id: job.name }, { status: ScanStatus.Success });
-    logger.info(`Scan ${job.name} for asset ${job.data.assetId} has scanned successfully`);
+    await Scan.updateOne(
+      { _id: job.name },
+      { status: ScanStatus.Success, dateCompleted: new Date() }
+    );
+    logger.info(
+      `Scan ${job.name} for asset ${job.data.assetId} has scanned successfully in ${job.attemptsMade} attempts`
+    );
   });
 
   worker.on('failed', async (job, err) => {
     if (job.attemptsMade === MAX_SCAN_ATTEMPTS) {
-      await Scan.updateOne({ _id: job.name }, { status: ScanStatus.Failed });
+      await Scan.updateOne(
+        { _id: job.name },
+        { status: ScanStatus.Failed, dateCompleted: new Date() }
+      );
     }
-    logger.error(`Scan ${job.name} for asset ${job.data.assetId} has failed with ${err.message}`);
+
+    const errMsg = `Scan ${job.name} for asset ${job.data.assetId} has failed with ${err.message} after ${job.attemptsMade} attempts`;
+    logger.error(errMsg);
   });
 };
 
-const addScanToQueue = (id: string, doc: any) => {
+const addScanToQueue = (id: string, doc: ScanInterface) => {
   logger.info(`Adding scan ${id} to queue`);
 
-  let delay = doc.scanDueDate.getTime() - new Date().getTime();
+  let delay: number | undefined = doc.scanDueDate.getTime() - new Date().getTime();
   if (delay < 0) {
-    delay = 0;
+    delay = undefined;
   }
 
   return queue.add(
@@ -87,12 +97,12 @@ const updateScanInQueue = async (id: string) => {
   // If no job was removed, the job has already completed. So no need to add a new one
   if (removed) {
     const scan = await Scan.findById(id);
-    return addScanToQueue(id, scan);
+    return addScanToQueue(id, scan as any);
   }
 };
 
 export const initDbListener = () => {
-  const scansChangeStream = Scan.watch<any>();
+  const scansChangeStream = Scan.watch();
 
   scansChangeStream.on('change', change => {
     if (change.operationType === 'insert') {

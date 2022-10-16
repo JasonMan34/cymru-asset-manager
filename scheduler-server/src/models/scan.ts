@@ -1,4 +1,4 @@
-import { model, Schema, Types } from 'mongoose';
+import { model, ObjectId, Schema, Types } from 'mongoose';
 
 export enum ScanStatus {
   Pending = 'Pending',
@@ -13,5 +13,14 @@ const Scan = new Schema({
   dateCompleted: { type: Date },
   status: { type: String, enum: ScanStatus, default: ScanStatus.Pending },
 });
+
+export interface ScanInterface {
+  _id: ObjectId;
+  assetId: ObjectId;
+  dateCreated: Date;
+  scanDueDate: Date;
+  dateCompleted?: Date;
+  status: ScanStatus;
+}
 
 export default model('scan', Scan);

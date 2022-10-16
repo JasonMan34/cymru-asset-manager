@@ -2,10 +2,11 @@ import './dotenv';
 import { initDbListener, initQueue, initWorker } from './scheduler';
 import { setup } from './setup';
 
-function main() {
+async function main() {
+  await setup();
   initQueue();
   initWorker();
   initDbListener();
 }
 
-setup().then(main);
+main();
